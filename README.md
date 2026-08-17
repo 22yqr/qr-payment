@@ -19,4 +19,4 @@
 
 ## 固定入口二维码
 
-启用 GitHub Pages 后，本页面的固定地址为 `https://22yqr.github.io/qr-payment/`。入口二维码图片保存为 `assets/entry-qr.png`，可下载、打印或转发给客户；客户扫码后会先进入本说明页，再识别其中的个人微信收款码。
+启用 GitHub Pages 后，本页面地址为 `https://22yqr.github.io/qr-payment/`。入口二维码图片保存为 `assets/entry-qr.png`，可下载、打印或转发给客户；该二维码附带版本参数，以避免微信继续使用旧页面缓存。客户扫码后会先进入本说明页，再识别其中的个人微信收款码。
