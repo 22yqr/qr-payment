@@ -6,8 +6,8 @@
 
 ## 配置个人收款码
 
-1. 已将你的个人官方微信收款码保存为 `assets/wechat-payment-code.jpg`。
-2. `index.html` 底部的 `PAYMENT_CONFIG.qrImageSrc` 已配置为该图片。
+1. 原始微信收款码海报保存为 `assets/wechat-payment-code.jpg`；可识别的二维码主体已裁切为 `assets/wechat-payment-qr-only.png`。
+2. `index.html` 底部的 `PAYMENT_CONFIG.qrImageSrc` 已配置为裁切后的高清二维码。
 3. 按需修改下列配置：
 
    - `merchantName`：收款方名称

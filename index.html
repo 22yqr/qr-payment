@@ -62,7 +62,7 @@
     .notice { display: flex; gap: 10px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.75; }
     .notice svg { flex: 0 0 auto; width: 18px; height: 18px; margin-top: 2px; color: var(--green); }
     .qr-panel { margin: 22px auto 0; padding: 18px 16px 15px; border: 1px solid #e5ece7; border-radius: 19px; background: #fcfffd; text-align: center; }
-    .qr-frame { position: relative; display: grid; width: 194px; height: 194px; margin: 0 auto 13px; place-items: center; overflow: hidden; background: #fff; border: 8px solid #fff; box-shadow: 0 8px 20px rgba(30, 60, 42, .07); }
+    .qr-frame { position: relative; display: grid; width: 236px; height: 236px; margin: 0 auto 13px; place-items: center; overflow: hidden; background: #fff; border: 8px solid #fff; box-shadow: 0 8px 20px rgba(30, 60, 42, .07); }
     .qr-placeholder { position: absolute; inset: 0; background: repeating-conic-gradient(#26372f 0 25%, #fff 0 50%) 50% / 18px 18px; }
     .qr-placeholder::before, .qr-placeholder::after { content: ""; position: absolute; width: 41px; height: 41px; background: #fff; border: 9px solid #26372f; }
     .qr-placeholder::before { top: 10px; left: 10px; }
@@ -172,7 +172,7 @@
       defaultAmount: '13.00',
       minAmount: 0.01,
       maxAmount: 99999.99,
-      qrImageSrc: 'assets/wechat-payment-code.jpg'
+      qrImageSrc: 'assets/wechat-payment-qr-only.png'
     };
 
     const views = { payment: document.querySelector('#payment-view'), success: document.querySelector('#success-view') };
