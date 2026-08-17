@@ -145,7 +145,7 @@
         <p class="amount-hint" id="amount-hint">默认 ¥13.00，可自行修改金额</p>
         <div class="item"><div><small>付款项目</small><strong data-item-name>入会（付款时务必备注 QQ）</strong></div><div class="item-price">¥<span data-amount>13.00</span></div></div>
         <div class="rule"></div>
-        <div class="field"><label class="field-label" for="qq"><span>你的 QQ 号</span><em>必填</em></label><div class="input-row"><input class="input" id="qq" name="qq" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="填写用于付款备注和入会联系的 QQ 号"><span class="input-suffix">QQ号</span></div><p class="error" id="qq-error">请填写正确的 QQ 号（5–12 位数字）</p></div>
+        <div class="field"><label class="field-label" for="qq"><span>你的 QQ 号</span><em>必填</em></label><div class="input-row"><input class="input" id="qq" name="qq" inputmode="numeric" autocomplete="off" maxlength="11" placeholder="填写用于付款备注和入会联系的 QQ 号"><span class="input-suffix">QQ号</span></div><p class="error" id="qq-error">请填写 11 位 QQ 号</p></div>
         <div class="qr-panel is-locked" id="qr-panel" aria-label="个人微信收款二维码区域">
           <p class="qr-lock">请先填写 QQ 号，再识别个人微信收款码付款。</p>
           <div class="qr-frame"><div class="qr-placeholder" aria-hidden="true"></div><div class="qr-emblem" aria-hidden="true">¥</div><img class="qr-image" id="qr-image" alt="个人微信收款二维码"></div>
@@ -207,7 +207,7 @@
     }
 
     function updatePaymentReadiness() {
-      const qqValid = /^\d{5,12}$/.test(qqInput.value.trim());
+      const qqValid = /^\d{11}$/.test(qqInput.value.trim());
       const amountValid = updateAmount();
       qrPanel.classList.toggle('is-locked', !qqValid);
       completeButton.disabled = !qqValid || !amountValid;
@@ -226,7 +226,7 @@
 
     qqInput.addEventListener('input', () => {
       const value = qqInput.value.trim();
-      const invalid = value !== '' && !/^\d{5,12}$/.test(value);
+      const invalid = value !== '' && !/^\d{11}$/.test(value);
       setInvalid(qqInput, invalid);
       showError('#qq-error', invalid);
       updatePaymentReadiness();
@@ -240,7 +240,7 @@
     });
 
     completeButton.addEventListener('click', () => {
-      const qqValid = /^\d{5,12}$/.test(qqInput.value.trim());
+      const qqValid = /^\d{11}$/.test(qqInput.value.trim());
       const amount = getAmount();
       setInvalid(qqInput, !qqValid);
       showError('#qq-error', !qqValid);
