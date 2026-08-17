@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f5f4">
+  <title>入会收款 · 高山流水</title>
+  <style>
+    :root {
+      --page: #f4f5f4;
+      --surface: #ffffff;
+      --text: #17191c;
+      --muted: #6f747b;
+      --faint: #a3a8af;
+      --line: #edf0ee;
+      --green: #07c160;
+      --green-dark: #06a852;
+      --green-pale: #edf9f1;
+      --danger: #d94848;
+      --shadow: 0 18px 46px rgba(24, 43, 32, .09);
+    }
+    * { box-sizing: border-box; }
+    html { background: var(--page); }
+    body {
+      margin: 0;
+      color: var(--text);
+      background: radial-gradient(circle at 50% -25%, #fff 0 270px, transparent 540px), var(--page);
+      font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input { font: inherit; }
+    button { border: 0; cursor: pointer; }
+    .app { width: min(100%, 460px); min-height: 100vh; margin: 0 auto; background: var(--page); overflow: hidden; }
+    .view { display: none; min-height: 100vh; padding-bottom: 132px; }
+    .view.is-active { display: block; animation: enter .28s ease-out; }
+    @keyframes enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .nav { height: 76px; display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; padding: 0 18px; }
+    .nav-title { text-align: center; font-size: 19px; font-weight: 700; letter-spacing: .03em; }
+    .back {
+      display: grid; width: 44px; height: 44px; place-items: center; color: var(--text); background: transparent; border-radius: 50%; transition: background .2s;
+    }
+    .back:hover { background: rgba(0,0,0,.06); }
+    .back svg { width: 24px; height: 24px; }
+    .merchant { display: flex; align-items: center; gap: 14px; padding: 23px 26px 30px; }
+    .merchant-avatar { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; color: #d9fbe7; background: linear-gradient(145deg, #164e3a, #0b241d); font: 28px Georgia, serif; box-shadow: 0 7px 16px rgba(10, 48, 34, .17); }
+    .merchant-copy small { display: block; margin-bottom: 5px; color: var(--muted); font-size: 13px; }
+    .merchant-copy strong { font-size: 23px; font-weight: 650; }
+    .content-card { margin: 0 16px; padding: 28px 24px 26px; background: var(--surface); border-radius: 26px; box-shadow: var(--shadow); }
+    .eyebrow { margin: 0; color: #59616a; font-size: 15px; }
+    .amount { margin: 9px 0 25px; font-size: clamp(47px, 13vw, 61px); font-weight: 750; line-height: 1; letter-spacing: -.06em; }
+    .amount-editor { display: flex; align-items: baseline; gap: 7px; }
+    .amount .currency { font-size: .64em; letter-spacing: 0; }
+    .amount-input { width: min(255px, 72vw); padding: 0; border: 0; outline: 0; color: inherit; background: transparent; font: inherit; letter-spacing: inherit; }
+    .amount-input::-webkit-outer-spin-button, .amount-input::-webkit-inner-spin-button { margin: 0; -webkit-appearance: none; }
+    .amount-input[type=number] { appearance: textfield; -moz-appearance: textfield; }
+    .amount-hint { margin: -17px 0 23px; color: var(--muted); font-size: 12px; }
+    .item { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 16px 17px; border-radius: 15px; color: #097b3e; background: var(--green-pale); }
+    .item small { display: block; margin-bottom: 5px; color: #298453; font-size: 12px; }
+    .item strong { font-size: 17px; }
+    .item-price { font-size: 20px; font-weight: 700; }
+    .rule { height: 1px; margin: 24px 0; background: var(--line); }
+    .notice { display: flex; gap: 10px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.75; }
+    .notice svg { flex: 0 0 auto; width: 18px; height: 18px; margin-top: 2px; color: var(--green); }
+    .qr-panel { margin: 22px auto 0; padding: 18px 16px 15px; border: 1px solid #e5ece7; border-radius: 19px; background: #fcfffd; text-align: center; }
+    .qr-frame { position: relative; display: grid; width: 194px; height: 194px; margin: 0 auto 13px; place-items: center; overflow: hidden; background: #fff; border: 8px solid #fff; box-shadow: 0 8px 20px rgba(30, 60, 42, .07); }
+    .qr-placeholder { position: absolute; inset: 0; background: repeating-conic-gradient(#26372f 0 25%, #fff 0 50%) 50% / 18px 18px; }
+    .qr-placeholder::before, .qr-placeholder::after { content: ""; position: absolute; width: 41px; height: 41px; background: #fff; border: 9px solid #26372f; }
+    .qr-placeholder::before { top: 10px; left: 10px; }
+    .qr-placeholder::after { top: 10px; right: 10px; }
+    .qr-emblem { position: relative; display: grid; width: 55px; height: 55px; place-items: center; border: 5px solid #fff; border-radius: 14px; color: #fff; background: var(--green); font-size: 24px; }
+    .qr-image { position: absolute; inset: 0; display: none; width: 100%; height: 100%; object-fit: contain; background: #fff; }
+    .qr-panel p { margin: 0; color: #5d6962; font-size: 13px; }
+    .qr-panel code { display: inline-block; margin-top: 6px; color: #a36b19; font-size: 11px; background: #fff5df; border-radius: 5px; padding: 3px 6px; }
+    .qr-panel.is-locked { padding: 26px 16px; border-style: dashed; background: #fafcfb; }
+    .qr-panel.is-locked .qr-frame, .qr-panel.is-locked .qr-help { display: none; }
+    .qr-lock { display: none; color: #6e7a73; font-size: 14px; line-height: 1.7; }
+    .qr-panel.is-locked .qr-lock { display: block; }
+    .sticky-action { position: fixed; right: 0; bottom: 0; left: 0; z-index: 5; padding: 15px max(22px, calc((100vw - 416px) / 2)); border-top: 1px solid rgba(225,230,227,.85); background: rgba(255,255,255,.93); backdrop-filter: blur(12px); }
+    .primary { width: 100%; min-height: 54px; border-radius: 15px; color: #fff; background: var(--green); font-size: 18px; font-weight: 700; box-shadow: 0 8px 18px rgba(7,193,96,.22); transition: transform .18s, background .18s; }
+    .primary:hover { background: var(--green-dark); transform: translateY(-1px); }
+    .primary:active { transform: translateY(1px); }
+    .primary:disabled { cursor: not-allowed; background: #a9dabb; box-shadow: none; transform: none; }
+    .sub-action { width: 100%; margin-top: 13px; color: #627c6d; background: transparent; font-size: 13px; }
+    .sub-action:hover { color: var(--green-dark); }
+    .step { display: flex; align-items: center; justify-content: center; gap: 7px; margin: 12px 0 1px; color: var(--faint); font-size: 12px; }
+    .step b { display: inline-grid; width: 17px; height: 17px; place-items: center; color: #fff; border-radius: 50%; background: var(--green); font-size: 10px; }
+    .step i { width: 22px; height: 1px; background: #dfe4e1; }
+    .form-card { margin-top: 4px; }
+    .form-heading { margin: 3px 0 7px; font-size: 25px; letter-spacing: .01em; }
+    .form-intro { margin: 0 0 25px; color: var(--muted); font-size: 14px; line-height: 1.65; }
+    .field { margin-top: 20px; }
+    .field:first-of-type { margin-top: 0; }
+    .field-label { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 9px; font-size: 15px; font-weight: 650; }
+    .field-label em { color: var(--faint); font-size: 12px; font-style: normal; font-weight: 400; }
+    .input { width: 100%; height: 53px; padding: 0 15px; border: 1px solid #e1e7e3; outline: 0; border-radius: 13px; color: var(--text); background: #f9fbfa; font-size: 16px; transition: border .2s, box-shadow .2s; }
+    .input:focus { border-color: #54cb89; box-shadow: 0 0 0 4px rgba(7,193,96,.1); background: #fff; }
+    .input.is-invalid { border-color: var(--danger); }
+    .error { display: none; margin: 7px 2px 0; color: var(--danger); font-size: 12px; }
+    .error.is-visible { display: block; }
+    .input-row { position: relative; }
+    .input-row .input { padding-right: 51px; }
+    .input-suffix { position: absolute; top: 50%; right: 15px; color: var(--faint); font-size: 13px; transform: translateY(-50%); }
+    .upload-box { display: block; min-height: 151px; padding: 20px; border: 1.5px dashed #b9d6c5; border-radius: 15px; color: #4f7760; background: #f7fcf8; text-align: center; cursor: pointer; transition: border .2s, background .2s; }
+    .upload-box:hover { border-color: var(--green); background: #f1faf4; }
+    .upload-box input { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; }
+    .upload-icon { display: grid; width: 43px; height: 43px; margin: 0 auto 9px; place-items: center; color: var(--green); background: #dff6e7; border-radius: 50%; }
+    .upload-icon svg { width: 22px; height: 22px; }
+    .upload-box strong { display: block; color: #286340; font-size: 15px; }
+    .upload-box small { display: block; margin-top: 5px; color: #7d9787; font-size: 12px; }
+    .preview { position: relative; display: none; margin-top: 12px; padding: 10px; border: 1px solid #e4ece7; border-radius: 15px; background: #fff; }
+    .preview.is-visible { display: flex; align-items: center; gap: 12px; }
+    .preview img { width: 68px; height: 82px; object-fit: cover; border-radius: 9px; background: #f4f4f4; }
+    .preview-copy { min-width: 0; flex: 1; text-align: left; }
+    .preview-copy strong, .preview-copy small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .preview-copy strong { font-size: 13px; } .preview-copy small { margin-top: 5px; color: var(--muted); font-size: 12px; }
+    .preview button { width: 32px; height: 32px; color: #64706a; background: #f1f4f2; border-radius: 50%; }
+    .privacy { margin: 18px 0 0; color: #81888a; font-size: 12px; line-height: 1.65; }
+    .success-wrap { padding: 64px 26px 30px; text-align: center; }
+    .success-mark { display: grid; width: 72px; height: 72px; margin: 0 auto 23px; place-items: center; color: #fff; border-radius: 50%; background: var(--green); box-shadow: 0 13px 25px rgba(7,193,96,.24); }
+    .success-mark svg { width: 39px; height: 39px; }
+    .success-wrap h1 { margin: 0; font-size: 26px; }
+    .success-wrap > p { margin: 12px auto 27px; max-width: 290px; color: var(--muted); font-size: 14px; line-height: 1.75; }
+    .summary { padding: 4px 19px; text-align: left; background: #fff; border-radius: 18px; box-shadow: var(--shadow); }
+    .summary-row { display: flex; justify-content: space-between; gap: 15px; padding: 17px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+    .summary-row:last-child { border-bottom: 0; }
+    .summary-row span { color: var(--muted); }
+    .summary-row strong { font-weight: 650; }
+    .success-note { display: flex; gap: 9px; margin-top: 22px; padding: 15px; border-radius: 13px; color: #5d6961; background: #f0f8f3; text-align: left; font-size: 12px; line-height: 1.7; }
+    .success-note svg { flex: 0 0 auto; width: 17px; height: 17px; color: var(--green); }
+    .demo-badge { display: inline-flex; align-items: center; gap: 5px; margin: 18px auto 0; color: #9b6f24; background: #fff6e3; border-radius: 20px; padding: 6px 11px; font-size: 11px; }
+    @media (min-width: 500px) { .app { box-shadow: 0 0 0 1px rgba(0,0,0,.035), 0 22px 75px rgba(20,35,28,.14); } .sticky-action { right: auto; left: 50%; width: 460px; transform: translateX(-50%); padding: 15px 22px; } }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="view is-active" id="payment-view" aria-labelledby="payment-title">
+      <header class="nav"><span></span><div class="nav-title" id="payment-title">入会收款</div><span></span></header>
+      <div class="merchant">
+        <div class="merchant-avatar" aria-hidden="true">山</div>
+        <div class="merchant-copy"><small>收款方</small><strong data-merchant-name>高山流水</strong></div>
+      </div>
+      <article class="content-card">
+        <p class="eyebrow">付款金额</p>
+        <div class="amount amount-editor"><span class="currency">¥</span><input class="amount-input" id="amount" type="number" inputmode="decimal" min="0.01" step="0.01" aria-label="付款金额" value="13.00"></div>
+        <p class="amount-hint" id="amount-hint">默认 ¥13.00，可自行修改金额</p>
+        <div class="item"><div><small>付款项目</small><strong data-item-name>入会（付款时务必备注 QQ）</strong></div><div class="item-price">¥<span data-amount>13.00</span></div></div>
+        <div class="rule"></div>
+        <div class="field"><label class="field-label" for="qq"><span>你的 QQ 号</span><em>必填</em></label><div class="input-row"><input class="input" id="qq" name="qq" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="填写用于付款备注和入会联系的 QQ 号"><span class="input-suffix">QQ号</span></div><p class="error" id="qq-error">请填写正确的 QQ 号（5–12 位数字）</p></div>
+        <div class="qr-panel is-locked" id="qr-panel" aria-label="个人微信收款二维码区域">
+          <p class="qr-lock">请先填写 QQ 号，再识别个人微信收款码付款。</p>
+          <div class="qr-frame"><div class="qr-placeholder" aria-hidden="true"></div><div class="qr-emblem" aria-hidden="true">¥</div><img class="qr-image" id="qr-image" alt="个人微信收款二维码"></div>
+          <p class="qr-help">长按识别或保存收款码后，在微信中完成付款</p>
+          <code id="qr-status">待替换个人官方收款码</code>
+        </div>
+        <div class="rule"></div>
+        <p class="notice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 10v6m0-9h.01"></path></svg><span>这是个人收款说明页。请在微信付款备注中填写同一个 QQ 号；页面无法读取或确认微信付款状态。</span></p>
+      </article>
+      <div class="sticky-action"><button class="primary" id="complete-payment" type="button" disabled>我已完成微信付款</button><p class="step"><b>1</b>填写信息<i></i><b>2</b>微信付款<i></i><b>3</b>人工核验</p></div>
+    </section>
+
+    <section class="view" id="success-view" aria-labelledby="success-title">
+      <header class="nav"><span></span><div class="nav-title">核验提示</div><span></span></header>
+      <div class="success-wrap"><div class="success-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.2 4.2L19.5 6"></path></svg></div><h1 id="success-title">等待人工核验</h1><p>请等待收款方根据微信付款备注中的 QQ 号核对本次付款。</p><div class="summary"><div class="summary-row"><span>付款项目</span><strong data-item-name>入会（付款时务必备注 QQ）</strong></div><div class="summary-row"><span>拟付款金额</span><strong>¥<span data-amount>13.00</span></strong></div><div class="summary-row"><span>付款备注 QQ</span><strong id="masked-qq">—</strong></div></div><div class="success-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 10v6m0-9h.01"></path></svg><span>本页面不能读取或确认微信付款状态，也不会保存你的 QQ 号或金额。请保留微信付款凭证，审核结果由人工通过 QQ 通知。</span></div><button class="sub-action" id="restart" type="button">返回收款页</button></div>
+    </section>
+  </main>
+
+  <script>
+    // 只需修改这里即可替换页面展示信息；个人收款码使用本地图片路径或 HTTPS 地址。
+    const PAYMENT_CONFIG = {
+      merchantName: '泰勒展不开(**容)',
+      itemName: '入会（付款时务必备注 QQ）',
+      defaultAmount: '13.00',
+      minAmount: 0.01,
+      maxAmount: 99999.99,
+      qrImageSrc: 'assets/wechat-payment-code.jpg'
+    };
+
+    const views = { payment: document.querySelector('#payment-view'), success: document.querySelector('#success-view') };
+    const amountInput = document.querySelector('#amount');
+    const qqInput = document.querySelector('#qq');
+    const qrPanel = document.querySelector('#qr-panel');
+    const completeButton = document.querySelector('#complete-payment');
+
+    function setView(name) {
+      Object.values(views).forEach(view => view.classList.remove('is-active'));
+      views[name].classList.add('is-active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showError(id, show) { document.querySelector(id).classList.toggle('is-visible', show); }
+    function setInvalid(element, invalid) { element.classList.toggle('is-invalid', invalid); }
+    function maskQQ(value) { return `${value.slice(0, 3)}****${value.slice(-2)}`; }
+
+    function getAmount() {
+      const value = Number.parseFloat(amountInput.value);
+      return Number.isFinite(value) && value >= PAYMENT_CONFIG.minAmount && value <= PAYMENT_CONFIG.maxAmount ? value : null;
+    }
+
+    function updateAmount() {
+      const amount = getAmount();
+      const displayAmount = amount === null ? '—' : amount.toFixed(2);
+      document.querySelectorAll('[data-amount]').forEach(el => el.textContent = displayAmount);
+      document.querySelector('#amount-hint').textContent = amount === null
+        ? `请输入 ¥${PAYMENT_CONFIG.minAmount.toFixed(2)}–¥${PAYMENT_CONFIG.maxAmount.toFixed(2)} 的金额`
+        : `默认 ¥${PAYMENT_CONFIG.defaultAmount}，可自行修改金额`;
+      return amount !== null;
+    }
+
+    function updatePaymentReadiness() {
+      const qqValid = /^\d{5,12}$/.test(qqInput.value.trim());
+      const amountValid = updateAmount();
+      qrPanel.classList.toggle('is-locked', !qqValid);
+      completeButton.disabled = !qqValid || !amountValid;
+    }
+
+    document.querySelectorAll('[data-merchant-name]').forEach(el => el.textContent = PAYMENT_CONFIG.merchantName);
+    document.querySelectorAll('[data-item-name]').forEach(el => el.textContent = PAYMENT_CONFIG.itemName);
+    amountInput.value = PAYMENT_CONFIG.defaultAmount;
+    updatePaymentReadiness();
+
+    if (PAYMENT_CONFIG.qrImageSrc) {
+      document.querySelector('#qr-image').src = PAYMENT_CONFIG.qrImageSrc;
+      document.querySelector('#qr-image').style.display = 'block';
+      document.querySelector('#qr-status').textContent = '个人官方收款码';
+    }
+
+    qqInput.addEventListener('input', () => {
+      const value = qqInput.value.trim();
+      const invalid = value !== '' && !/^\d{5,12}$/.test(value);
+      setInvalid(qqInput, invalid);
+      showError('#qq-error', invalid);
+      updatePaymentReadiness();
+    });
+
+    amountInput.addEventListener('input', updatePaymentReadiness);
+    amountInput.addEventListener('blur', () => {
+      const amount = getAmount();
+      if (amount !== null) amountInput.value = amount.toFixed(2);
+      updatePaymentReadiness();
+    });
+
+    completeButton.addEventListener('click', () => {
+      const qqValid = /^\d{5,12}$/.test(qqInput.value.trim());
+      const amount = getAmount();
+      setInvalid(qqInput, !qqValid);
+      showError('#qq-error', !qqValid);
+      if (!qqValid || amount === null) return;
+      document.querySelector('#masked-qq').textContent = maskQQ(qqInput.value.trim());
+      document.querySelectorAll('[data-amount]').forEach(el => el.textContent = amount.toFixed(2));
+      setView('success');
+    });
+
+    document.querySelector('#restart').addEventListener('click', () => {
+      qqInput.value = '';
+      amountInput.value = PAYMENT_CONFIG.defaultAmount;
+      setInvalid(qqInput, false);
+      showError('#qq-error', false);
+      updatePaymentReadiness();
+      setView('payment');
+    });
+  </script>
+</body>
+</html>
